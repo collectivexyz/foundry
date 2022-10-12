@@ -14,7 +14,7 @@ RUN usermod -a -G sudo mr
 RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 ## Go Lang
-ARG GO_VERSION=1.18.5
+ARG GO_VERSION=1.18.7
 ARG PROCESSOR_ARCH=amd64
 ADD https://go.dev/dl/go${GO_VERSION}.linux-${PROCESSOR_ARCH}.tar.gz /go-ethereum/go${GO_VERSION}.linux-${PROCESSOR_ARCH}.tar.gz
 RUN tar -C /usr/local -xzf /go-ethereum/go${GO_VERSION}.linux-${PROCESSOR_ARCH}.tar.gz
@@ -55,7 +55,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   git gnupg2 curl build-essential \
   sudo ripgrep npm procps \
   ca-certificates apt-transport-https \
-  python3 python3-pip && \
+  python3 python3-pip python3-dev && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
 
