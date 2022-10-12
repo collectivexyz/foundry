@@ -1,12 +1,10 @@
 # Foundry Development Container
 
-Everything needed to develop smart contracts with Ethereum and Foundry.
+Everything needed to develop smart contracts with Ethereum and [Foundry](https://github.com/foundry-rs/foundry)
 
 SOLC: 0.8.17
 ETH: 1.10.25
-GO: 1.18.5
-
-
+GO: 1.18.7
 
 ## Example Dockerfile
 
