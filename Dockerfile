@@ -14,7 +14,7 @@ RUN usermod -a -G sudo mr
 RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 ## Go Lang
-ARG GO_VERSION=1.18.7
+ARG GO_VERSION=1.19.3
 ARG PROCESSOR_ARCH=amd64
 ADD https://go.dev/dl/go${GO_VERSION}.linux-${PROCESSOR_ARCH}.tar.gz /go-ethereum/go${GO_VERSION}.linux-${PROCESSOR_ARCH}.tar.gz
 RUN tar -C /usr/local -xzf /go-ethereum/go${GO_VERSION}.linux-${PROCESSOR_ARCH}.tar.gz
@@ -23,7 +23,7 @@ RUN go version
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.10.25
+ARG ETH_VERSION=1.10.26
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/${ETH_VERSION}.tar.gz
 RUN tar -zxf ${ETH_VERSION}.tar.gz  -C /go-ethereum
 WORKDIR /go-ethereum/go-ethereum-${ETH_VERSION}
@@ -79,6 +79,6 @@ RUN solc --version
 COPY --from=builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.10.25
+ARG ETH_VERSION=1.10.26
 COPY --from=builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 COPY --chown=mr:mr --from=builder /home/mr/.cargo /home/mr/.cargo

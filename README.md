@@ -9,7 +9,7 @@ GO: 1.18.7
 ## Example Dockerfile
 
 ```
-FROM ghcr.io/momentranks/foundry:latest
+FROM ghcr.io/collectivexyz/foundry:latest
 
 ENV PATH=${PATH}:~/.cargo/bin
 RUN ~mr/.cargo/bin/forge build --sizes
