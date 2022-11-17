@@ -1,5 +1,9 @@
 FROM debian:stable-slim as builder
 
+# defined from build kit
+# DOCKER_BUILDKIT=1 docker build . -t ...
+ARG TARGETARCH
+
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt update && \
   apt install -y -q --no-install-recommends \
@@ -15,9 +19,8 @@ RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 ## Go Lang
 ARG GO_VERSION=1.19.3
-ARG PROCESSOR_ARCH=amd64
-ADD https://go.dev/dl/go${GO_VERSION}.linux-${PROCESSOR_ARCH}.tar.gz /go-ethereum/go${GO_VERSION}.linux-${PROCESSOR_ARCH}.tar.gz
-RUN tar -C /usr/local -xzf /go-ethereum/go${GO_VERSION}.linux-${PROCESSOR_ARCH}.tar.gz
+ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
+RUN tar -C /usr/local -xzf /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
 ENV PATH=$PATH:/usr/local/go/bin
 RUN go version
 
