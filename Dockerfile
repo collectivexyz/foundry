@@ -7,8 +7,10 @@ ARG TARGETARCH
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt update && \
   apt install -y -q --no-install-recommends \
-  git curl gnupg2 build-essential openssl libssl-dev pkg-config \
-  ca-certificates apt-transport-https \
+    git curl gnupg2 build-essential \
+    cmake g++-10 libboost-all-dev libc6-dev \ 
+    openssl libssl-dev pkg-config \
+    ca-certificates apt-transport-https \
   python3 && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
@@ -16,6 +18,18 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN useradd --create-home -s /bin/bash mr
 RUN usermod -a -G sudo mr
 RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+## SOLC
+WORKDIR /solidity
+
+ARG SOLC_VERSION=0.8.17
+ADD https://github.com/ethereum/solidity/archive/refs/tags/v${SOLC_VERSION}.tar.gz /solidity/solidity-${SOLC_VERSION}.tar.gz
+RUN tar -zxvf /solidity/solidity-${SOLC_VERSION}.tar.gz -C /solidity
+
+WORKDIR /solidity/solidity-${SOLC_VERSION}/build
+RUN echo 8df45f5f8632da4817bc7ceb81497518f298d290 | tee ../commit_hash.txt
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DSTRICT_Z3_VERSION=OFF -DUSE_CVC4=OFF -DUSE_Z3=OFF ..
+RUN make -j6 install
 
 ## Go Lang
 ARG GO_VERSION=1.19.3
@@ -27,8 +41,8 @@ RUN go version
 ## Go Ethereum
 WORKDIR /go-ethereum
 ARG ETH_VERSION=1.10.26
-ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/${ETH_VERSION}.tar.gz
-RUN tar -zxf ${ETH_VERSION}.tar.gz  -C /go-ethereum
+ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
+RUN tar -zxf go-ethereum-${ETH_VERSION}.tar.gz  -C /go-ethereum
 WORKDIR /go-ethereum/go-ethereum-${ETH_VERSION}
 RUN go mod download 
 RUN go run build/ci.go install
@@ -70,10 +84,8 @@ RUN useradd --create-home -s /bin/bash mr
 RUN usermod -a -G sudo mr
 RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# SOLC Docs
-RUN pip install --upgrade pip
-RUN pip install solc-select
-RUN solc-select install 0.8.17
+# SOLC
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 ENV SOLC_VERSION=0.8.17
 RUN solc --version
@@ -85,3 +97,4 @@ COPY --from=builder /usr/local/go /usr/local/go
 ARG ETH_VERSION=1.10.26
 COPY --from=builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 COPY --chown=mr:mr --from=builder /home/mr/.cargo /home/mr/.cargo
+RUN /home/mr/.cargo/env
