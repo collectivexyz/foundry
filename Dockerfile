@@ -28,7 +28,7 @@ RUN tar -zxvf /solidity/solidity-${SOLC_VERSION}.tar.gz -C /solidity
 
 WORKDIR /solidity/solidity-${SOLC_VERSION}/build
 RUN echo 8df45f5f8632da4817bc7ceb81497518f298d290 | tee ../commit_hash.txt
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DSTRICT_Z3_VERSION=OFF -DUSE_CVC4=OFF -DUSE_Z3=OFF ..
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DSTRICT_Z3_VERSION=OFF -DUSE_CVC4=OFF -DUSE_Z3=OFF -DPEDANTIC=OFF ..
 RUN make -j6 install
 
 ## Go Lang
@@ -97,4 +97,4 @@ COPY --from=builder /usr/local/go /usr/local/go
 ARG ETH_VERSION=1.10.26
 COPY --from=builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 COPY --chown=mr:mr --from=builder /home/mr/.cargo /home/mr/.cargo
-RUN /home/mr/.cargo/env
+
