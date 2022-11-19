@@ -27,10 +27,13 @@ ADD https://github.com/ethereum/solidity/archive/refs/tags/v${SOLC_VERSION}.tar.
 RUN tar -zxvf /solidity/solidity-${SOLC_VERSION}.tar.gz -C /solidity
 
 WORKDIR /solidity/solidity-${SOLC_VERSION}/build
-RUN echo 8df45f5f8632da4817bc7ceb81497518f298d290 | tee ../commit_hash.txt
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DSTRICT_Z3_VERSION=OFF -DUSE_CVC4=OFF -DUSE_Z3=OFF -DPEDANTIC=OFF ..
-RUN cmake --build . --config Release
-RUN make install
+# disable tests on arm due to the length of build in intel emulation
+RUN test $TARGETARCH = "amd64" && \
+    echo 8df45f5f8632da4817bc7ceb81497518f298d290 | tee ../commit_hash.txt && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DSTRICT_Z3_VERSION=OFF -DUSE_CVC4=OFF -DUSE_Z3=OFF -DPEDANTIC=OFF .. && \
+    cmake --build . --config Release && \
+    make install \
+    || :
 
 ## Go Lang
 ARG GO_VERSION=1.19.3
@@ -87,9 +90,8 @@ RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # SOLC
 COPY --from=builder /usr/local/bin /usr/local/bin
-
-ENV SOLC_VERSION=0.8.17
-RUN solc --version
+RUN test $TARGETARCH = "amd64" && \
+    solc --version
 
 # GO LANG
 COPY --from=builder /usr/local/go /usr/local/go
