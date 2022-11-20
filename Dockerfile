@@ -61,7 +61,6 @@ USER mr
 RUN /rustup/rustup-init.sh -y --default-toolchain stable --profile minimal
 RUN ~mr/.cargo/bin/rustup default stable
 
-
 ## Foundry
 WORKDIR /foundry
 
@@ -81,8 +80,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
 
-
-# RUN npm install npm -g
 RUN npm install yarn -g
 
 RUN useradd --create-home -s /bin/bash mr
