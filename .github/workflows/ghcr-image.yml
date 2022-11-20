@@ -2,7 +2,8 @@ name: Deploy Image CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - "*"
   release:
     types: [created]
 
@@ -15,6 +16,9 @@ env:
 
 jobs:
   docker:
+    strategy:
+      matrix:
+        arch: [linux/amd64, linux/arm64/v8]
     runs-on: ubuntu-latest
     steps:
       -
@@ -44,7 +48,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          platforms: linux/amd64,linux/arm64/v8     
+          platforms: ${{ matrix.arch }}
           push: ${{ github.event_name == 'release' && github.event.action == 'created' }}
           tags: |
             ghcr.io/${{ env.REPOSITORY_PATH }}:v${{ github.event.release.tag_name }}

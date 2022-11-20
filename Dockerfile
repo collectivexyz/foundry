@@ -31,7 +31,7 @@ WORKDIR /solidity/solidity-${SOLC_VERSION}/build
 RUN test $TARGETARCH = "amd64" && \
     echo 8df45f5f8632da4817bc7ceb81497518f298d290 | tee ../commit_hash.txt && \
     cmake -DCMAKE_BUILD_TYPE=Release -DSTRICT_Z3_VERSION=OFF -DUSE_CVC4=OFF -DUSE_Z3=OFF -DPEDANTIC=OFF .. && \
-    cmake --build . --config Release && \
+    CMAKE_BUILD_PARALLEL_LEVEL=2 cmake --build . --config Release && \
     make install \
     || :
 
@@ -69,6 +69,7 @@ WORKDIR /foundry
 RUN ~mr/.cargo/bin/cargo install --git https://github.com/foundry-rs/foundry --profile local --locked foundry-cli
 
 FROM debian:stable-slim
+ARG TARGETARCH
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt update && \
