@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-VERSION=$(git rev-parse HEAD | cut -c 1-10)
+VERSION=$(git rev-parse HEAD | cut -c 1-8)
 
 PROJECT=collectivexyz/foundry
 
-docker build . -t ${PROJECT}:${VERSION} && \
+PLATFORM=linux/amd64
+
+DOCKER_BUILDKIT=1 docker build --platform ${PLATFORM} . -t ${PROJECT}:${VERSION} && \
 	docker run --rm -i -t ${PROJECT}:${VERSION}
