@@ -8,7 +8,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   apt update && \
   apt install -y -q --no-install-recommends \
     git curl gnupg2 build-essential \
-    cmake g++-10 libboost-all-dev libc6-dev \ 
     openssl libssl-dev pkg-config \
     ca-certificates apt-transport-https \
   python3 && \
@@ -18,22 +17,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN useradd --create-home -s /bin/bash mr
 RUN usermod -a -G sudo mr
 RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-## SOLC
-WORKDIR /solidity
-
-ARG SOLC_VERSION=0.8.17
-ADD https://github.com/ethereum/solidity/archive/refs/tags/v${SOLC_VERSION}.tar.gz /solidity/solidity-${SOLC_VERSION}.tar.gz
-RUN tar -zxvf /solidity/solidity-${SOLC_VERSION}.tar.gz -C /solidity
-
-WORKDIR /solidity/solidity-${SOLC_VERSION}/build
-# disable tests on arm due to the length of build in intel emulation
-RUN test $TARGETARCH = "amd64" && \
-    echo 8df45f5f8632da4817bc7ceb81497518f298d290 | tee ../commit_hash.txt && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DSTRICT_Z3_VERSION=OFF -DUSE_CVC4=OFF -DUSE_Z3=OFF -DPEDANTIC=OFF .. && \
-    CMAKE_BUILD_PARALLEL_LEVEL=2 cmake --build . --config Release && \
-    make install \
-    || :
 
 ## Go Lang
 ARG GO_VERSION=1.19.3
@@ -67,7 +50,7 @@ WORKDIR /foundry
 # latest https://github.com/foundry-rs/foundry
 RUN ~mr/.cargo/bin/cargo install --git https://github.com/foundry-rs/foundry --profile local --locked foundry-cli
 
-FROM debian:stable-slim
+FROM ghcr.io/jac18281828/solc:latest
 ARG TARGETARCH
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -88,8 +71,7 @@ RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # SOLC
 COPY --from=builder /usr/local/bin /usr/local/bin
-RUN test $TARGETARCH = "amd64" && \
-    solc --version
+RUN solc --version
 
 # GO LANG
 COPY --from=builder /usr/local/go /usr/local/go
