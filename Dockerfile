@@ -1,5 +1,4 @@
-FROM debian:stable-slim as builder
-
+FROM ghcr.io/jac18281828/solc:latest as builder
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
 ARG TARGETARCH
@@ -50,7 +49,7 @@ WORKDIR /foundry
 # latest https://github.com/foundry-rs/foundry
 RUN ~mr/.cargo/bin/cargo install --git https://github.com/foundry-rs/foundry --profile local --locked foundry-cli
 
-FROM ghcr.io/jac18281828/solc:latest
+FROM debian:stable-slim
 ARG TARGETARCH
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -70,7 +69,9 @@ RUN usermod -a -G sudo mr
 RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # SOLC
-COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /usr/local/bin/solc /usr/local/bin
+COPY --from=builder /usr/local/bin/yul-phaser /usr/local/bin
+COPY --from=builder /usr/local/bin/solidity-upgrade /usr/local/bin
 RUN solc --version
 
 # GO LANG
