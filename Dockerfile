@@ -71,7 +71,7 @@ RUN git clone https://github.com/foundry-rs/foundry
 
 WORKDIR /foundry/foundry
 RUN . ~mr/.cargo/env && \
-    cargo install --path ./cli --profile local --bins --locked --force
+    cargo install --path ./cli --profile release --bins --locked --force
 
 FROM debian:stable-slim
 ARG TARGETARCH
