@@ -10,8 +10,17 @@ SOLC: 0.8.17
 
 * requires:
   - 16 Gb memory
+  - docker  
   - BuildKit TARGETARCH
    `$ DOCKER_BUILDKIT=1 docker build . -t ... `
+
+
+## arm64
+
+  It's possible to use this container on Apple Silicon but a build is not provided in the ghcr registry at this time.
+
+  To build locally, run:
+  ` $ sh build.sh `
 
 ### Architecture
 * linux/amd64 
