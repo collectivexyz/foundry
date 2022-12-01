@@ -8,14 +8,14 @@ SOLC: 0.8.17
 
 ### Building
 
-Build requires BuildKit TARGETARCH
-
-`$ DOCKER_BUILDKIT=1 docker build . -t ... `
+* requires:
+  - 16 Gb memory
+  - BuildKit TARGETARCH
+   `$ DOCKER_BUILDKIT=1 docker build . -t ... `
 
 ### Architecture
 * linux/amd64 
 * linux/arm64
-
 
 ## Example Dockerfile
 
