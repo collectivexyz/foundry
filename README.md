@@ -17,7 +17,7 @@ SOLC: 0.8.17
 
 ## arm64
 
-  It's possible to use this container on Apple Silicon but a build is not provided in the ghcr registry at this time.
+  It's possible to use this container on Apple Silicon but an image is not provided in the ghcr registry at this time.
 
   To build locally, run:
   ` $ sh build.sh `
