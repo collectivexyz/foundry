@@ -81,8 +81,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   apt install -y -q --no-install-recommends \
     git gnupg2 curl build-essential \
     libz3-dev z3 \
-    sudo ripgrep npm procps \
     ca-certificates apt-transport-https \
+    sudo ripgrep npm procps \
     python3 python3-pip python3-dev && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
