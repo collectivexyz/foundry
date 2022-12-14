@@ -6,6 +6,10 @@ GO: 1.19.3
 ETH: 1.10.26
 SOLC: 0.8.17
 
+#### Deployments 
+
+[Releases](https://github.com/collectivexyz/foundry/pkgs/container/foundry)
+
 ### Building
 
 * requires:
