@@ -1,4 +1,4 @@
-FROM debian:stable-slim as gobuilder
+FROM debian:stable-slim as go-builder
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
 ARG TARGETARCH
@@ -32,7 +32,7 @@ WORKDIR /go-ethereum/go-ethereum-${ETH_VERSION}
 RUN go mod download 
 RUN go run build/ci.go install
 
-FROM ghcr.io/jac18281828/solc:latest as builder
+FROM debian:stable-slim as foundry-builder
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
 ARG TARGETARCH
@@ -40,13 +40,13 @@ ARG TARGETARCH
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt update && \
   apt install -y -q --no-install-recommends \
-    git curl gnupg2 build-essential \
+    git curl gnupg2 build-essential linux-headers-${TARGETARCH} \
     g++-10 libc6-dev \ 
     openssl libssl-dev pkg-config \
     ca-certificates apt-transport-https \
   python3 && \
   apt clean && \
-    rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/*
 
 RUN useradd --create-home -s /bin/bash mr
 RUN usermod -a -G sudo mr
@@ -55,23 +55,29 @@ RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 WORKDIR /rustup
 ## Rust
-ADD https://sh.rustup.rs /rustup/rustup
-RUN chmod 755 /rustup/rustup
+ADD https://sh.rustup.rs /rustup/rustup.sh
+RUN chmod 755 /rustup/rustup.sh
 
 ENV USER=mr
 USER mr
-RUN /rustup/rustup -y --default-toolchain stable --profile minimal
+RUN /rustup/rustup.sh -y --default-toolchain stable --profile minimal
 
 ## Foundry
-WORKDIR /foundry
+WORKDIR /build
 
 # latest https://github.com/foundry-rs/foundry
 ENV PATH=$PATH:~mr/.cargo/bin
 RUN git clone https://github.com/foundry-rs/foundry
 
-WORKDIR /foundry/foundry
-RUN . ~mr/.cargo/env && \
-    cargo install --path ./cli --profile release --bins --locked --force
+WORKDIR /build/foundry
+RUN [[ "$TARGETARCH" = "arm64" ]] && export CFLAGS=-mno-outline-atomics || true && \
+    . $HOME/.cargo/env && \
+    cargo build --release && \
+    strip target/release/forge && \
+    strip target/release/cast && \
+    strip target/release/anvil
+
+#    cargo install --path ./cli --profile release --bins --locked --force
 
 FROM debian:stable-slim
 ARG TARGETARCH
@@ -94,19 +100,33 @@ RUN usermod -a -G sudo mr
 RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # SOLC
-COPY --from=builder /usr/local/bin/solc /usr/local/bin
-COPY --from=builder /usr/local/bin/yul-phaser /usr/local/bin
-COPY --from=builder /usr/local/bin/solidity-upgrade /usr/local/bin
+COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/solc /usr/local/bin
+COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/yul-phaser /usr/local/bin
+COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/solidity-upgrade /usr/local/bin
 RUN solc --version
 
 ## Rust 
-COPY --chown=mr:mr --from=builder /home/mr/.cargo /home/mr/.cargo
+COPY --chown=mr:mr --from=foundry-builder /home/mr/.cargo /home/mr/.cargo
 
 # GO LANG
-COPY --from=gobuilder /usr/local/go /usr/local/go
+COPY --from=go-builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
 ARG ETH_VERSION=1.10.26
-COPY --from=gobuilder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
+COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
+# Foundry
+COPY --from=foundry-builder /build/foundry/target/release/forge /usr/local/bin/forge
+COPY --from=foundry-builder /build/foundry/target/release/cast /usr/local/bin/cast
+COPY --from=foundry-builder /build/foundry/target/release/anvil /usr/local/bin/anvil
+
+LABEL org.label-schema.build-date=$BUILD_DATE \
+    org.label-schema.name="foundry" \
+    org.label-schema.description="Foundry RS Development Container" \
+    org.label-schema.url="https://github.com/collectivexyz/foundry" \
+    org.label-schema.vcs-ref=$VCS_REF \
+    org.label-schema.vcs-url="git@github.com:collectivexyz/foundry.git" \
+    org.label-schema.vendor="collectivexyz" \
+    org.label-schema.version=$VERSION \
+    org.label-schema.schema-version="1.0"
 
