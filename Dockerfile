@@ -13,8 +13,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
 
-COPY . . 
-
 ## Go Lang
 ARG GO_VERSION=1.19.3
 ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
