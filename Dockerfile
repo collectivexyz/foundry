@@ -70,7 +70,7 @@ RUN git clone https://github.com/foundry-rs/foundry
 WORKDIR /build/foundry
 RUN [[ "$TARGETARCH" = "arm64" ]] && export CFLAGS=-mno-outline-atomics || true && \
     . $HOME/.cargo/env && \
-    cargo build --release --jobs 2 && \
+    cargo build --release && \
     strip target/release/forge && \
     strip target/release/cast && \
     strip target/release/anvil
