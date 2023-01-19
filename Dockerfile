@@ -68,8 +68,9 @@ ENV PATH=$PATH:~mr/.cargo/bin
 RUN git clone https://github.com/foundry-rs/foundry
 
 WORKDIR /build/foundry
-RUN [[ "$TARGETARCH" = "arm64" ]] && export CFLAGS=-mno-outline-atomics || true && \
+RUN [ "$TARGETARCH" = "arm64" ] && export CFLAGS=-mno-outline-atomics || true && \
     . $HOME/.cargo/env && \
+    echo "CFLAGS=${CFLAGS}" && \
     cargo build --release && \
     strip target/release/forge && \
     strip target/release/cast && \
