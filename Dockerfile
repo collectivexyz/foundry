@@ -75,9 +75,33 @@ RUN [[ "$TARGETARCH" = "arm64" ]] && export CFLAGS=-mno-outline-atomics || true 
     strip target/release/cast && \
     strip target/release/anvil
 
-#    cargo install --path ./cli --profile release --bins --locked --force
 
-FROM debian:stable-slim
+FROM debian:stable-slim as node18-slim
+
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt update && \
+    apt install -y -q --no-install-recommends \
+    build-essential git curl ca-certificates apt-transport-https && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/local/nvm
+ENV NVM_DIR=/usr/local/nvm
+
+ENV NODE_VERSION=v18.13.0
+
+ADD https://raw.githubusercontent.com/creationix/nvm/master/install.sh /usr/local/etc/nvm/install.sh
+RUN bash /usr/local/etc/nvm/install.sh && \
+    bash -c ". $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION && nvm use default"
+
+ENV NVM_NODE_PATH ${NVM_DIR}/versions/node/${NODE_VERSION}
+ENV NODE_PATH ${NVM_NODE_PATH}/lib/node_modules
+ENV PATH      ${NVM_NODE_PATH}/bin:$PATH
+
+RUN npm install npm -g
+RUN npm install yarn -g
+
+FROM node18-slim
 ARG TARGETARCH
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -86,12 +110,10 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     git gnupg2 curl build-essential \
     libz3-dev z3 \
     ca-certificates apt-transport-https \
-    sudo ripgrep npm procps \
+    sudo ripgrep procps \
     python3 python3-pip python3-dev && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
-
-RUN npm install yarn -g
 
 RUN useradd --create-home -s /bin/bash mr
 RUN usermod -a -G sudo mr
