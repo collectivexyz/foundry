@@ -14,7 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   rm -rf /var/lib/apt/lists/*
 
 ## Go Lang
-ARG GO_VERSION=1.19.3
+ARG GO_VERSION=1.20
 ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
 # RUN cat /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum -c go.${TARGETARCH}.sha256
 RUN tar -C /usr/local -xzf /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
@@ -68,10 +68,14 @@ ENV PATH=$PATH:~mr/.cargo/bin
 RUN git clone https://github.com/foundry-rs/foundry
 
 WORKDIR /build/foundry
-RUN [ "$TARGETARCH" = "arm64" ] && export CFLAGS=-mno-outline-atomics || true && \
+RUN git -c advice.detachedHead=false checkout nightly && \
     . $HOME/.cargo/env && \
+    [ "$TARGETARCH" = "arm64" ] && export CFLAGS=-mno-outline-atomics || true && \
     echo "CFLAGS=${CFLAGS}" && \
-    cargo build --release && \
+    THREAD_NUMBER=$(cat /proc/cpuinfo | grep processor | wc -l) && \
+    MAX_THREADS=$(( THREAD_NUMBER > 2 ?  2 : THREAD_NUMBER )) && \
+    echo "now building with ${MAX_THREADS} threads" && \
+    cargo build --jobs ${MAX_THREADS} --release && \
     strip target/release/forge && \
     strip target/release/cast && \
     strip target/release/anvil
@@ -123,7 +127,6 @@ RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # SOLC
 COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/solc /usr/local/bin
 COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/yul-phaser /usr/local/bin
-COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/solidity-upgrade /usr/local/bin
 RUN solc --version
 
 ## Rust 

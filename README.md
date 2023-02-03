@@ -14,7 +14,7 @@ SOLC: 0.8.17
 
 * requires:
   - 16 Gb memory
-  - docker  
+  - Docker  
   - BuildKit TARGETARCH
    `$ DOCKER_BUILDKIT=1 docker build . -t ... `
 
