@@ -80,6 +80,8 @@ RUN git -c advice.detachedHead=false checkout nightly && \
     strip target/release/cast && \
     strip target/release/anvil
 
+RUN git rev-parse HEAD > /build/foundry_commit_sha
+
 
 FROM debian:stable-slim as node18-slim
 
@@ -140,6 +142,7 @@ ARG ETH_VERSION=1.10.26
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry
+COPY --from=foundry-builder /build/foundry_commit_sha /usr/local/etc/foundry_commit_sha
 COPY --from=foundry-builder /build/foundry/target/release/forge /usr/local/bin/forge
 COPY --from=foundry-builder /build/foundry/target/release/cast /usr/local/bin/cast
 COPY --from=foundry-builder /build/foundry/target/release/anvil /usr/local/bin/anvil
