@@ -34,6 +34,7 @@ FROM debian:stable-slim as foundry-builder
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
 ARG TARGETARCH
+ARG MAXIMUM_THREADS=2
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt update && \
@@ -73,8 +74,8 @@ RUN git -c advice.detachedHead=false checkout nightly && \
     [ "$TARGETARCH" = "arm64" ] && export CFLAGS=-mno-outline-atomics || true && \
     echo "CFLAGS=${CFLAGS}" && \
     THREAD_NUMBER=$(cat /proc/cpuinfo | grep processor | wc -l) && \
-    MAX_THREADS=$(( THREAD_NUMBER > 2 ?  2 : THREAD_NUMBER )) && \
-    echo "now building with ${MAX_THREADS} threads" && \
+    MAX_THREADS=$(( THREAD_NUMBER > ${MAXIMUM_THREADS} ?  ${MAXIMUM_THREADS} : THREAD_NUMBER )) && \
+    echo "building with ${MAX_THREADS} threads" && \
     cargo build --jobs ${MAX_THREADS} --release && \
     strip target/release/forge && \
     strip target/release/cast && \
@@ -122,6 +123,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
 
+RUN echo "building platform $(uname -m)"
+
 RUN useradd --create-home -s /bin/bash mr
 RUN usermod -a -G sudo mr
 RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
@@ -156,4 +159,3 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vendor="collectivexyz" \
     org.label-schema.version=$VERSION \
     org.label-schema.schema-version="1.0"
-
