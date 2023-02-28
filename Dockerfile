@@ -141,7 +141,7 @@ COPY --chown=mr:mr --from=foundry-builder /home/mr/.cargo /home/mr/.cargo
 COPY --from=go-builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.10.26
+ARG ETH_VERSION=1.11.2
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry
