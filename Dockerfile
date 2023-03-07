@@ -79,7 +79,8 @@ RUN git -c advice.detachedHead=false checkout nightly && \
     cargo build --jobs ${MAX_THREADS} --release && \
     strip target/release/forge && \
     strip target/release/cast && \
-    strip target/release/anvil
+    strip target/release/anvil && \
+    strip target/release/chisel
 
 RUN git rev-parse HEAD > /build/foundry_commit_sha
 
@@ -149,6 +150,7 @@ COPY --from=foundry-builder /build/foundry_commit_sha /usr/local/etc/foundry_com
 COPY --from=foundry-builder /build/foundry/target/release/forge /usr/local/bin/forge
 COPY --from=foundry-builder /build/foundry/target/release/cast /usr/local/bin/cast
 COPY --from=foundry-builder /build/foundry/target/release/anvil /usr/local/bin/anvil
+COPY --from=foundry-builder /build/foundry/target/release/chisel /usr/local/bin/chisel
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.name="foundry" \
