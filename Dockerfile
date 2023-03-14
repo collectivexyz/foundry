@@ -14,17 +14,20 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   rm -rf /var/lib/apt/lists/*
 
 ## Go Lang
-ARG GO_VERSION=1.20.1
+ARG GO_VERSION=1.20.2
 ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
-# RUN cat /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum -c go.${TARGETARCH}.sha256
+RUN echo 'SHA256 of this go source package...'
+RUN cat /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum 
 RUN tar -C /usr/local -xzf /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
 ENV PATH=$PATH:/usr/local/go/bin
 RUN go version
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.11.2
+ARG ETH_VERSION=1.11.4
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
+RUN echo 'SHA256 of this go-ethereum package...'
+RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
 RUN tar -zxf go-ethereum-${ETH_VERSION}.tar.gz  -C /go-ethereum
 WORKDIR /go-ethereum/go-ethereum-${ETH_VERSION}
 RUN go mod download 
@@ -84,7 +87,6 @@ RUN git -c advice.detachedHead=false checkout nightly && \
 
 RUN git rev-parse HEAD > /build/foundry_commit_sha
 
-
 FROM debian:stable-slim as node18-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -97,7 +99,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v18.13.0
+ENV NODE_VERSION=v18.15.0
 
 ADD https://raw.githubusercontent.com/creationix/nvm/master/install.sh /usr/local/etc/nvm/install.sh
 RUN bash /usr/local/etc/nvm/install.sh && \
@@ -142,7 +144,7 @@ COPY --chown=mr:mr --from=foundry-builder /home/mr/.cargo /home/mr/.cargo
 COPY --from=go-builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.11.2
+ARG ETH_VERSION=1.11.4
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry
