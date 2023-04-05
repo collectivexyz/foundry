@@ -1,3 +1,7 @@
+# 0.9.28 (2023-04-05)
+
+* move release before the build to allow push action to work
+
 # 0.9.27 (2023-04-05)
 
 * move release post build
