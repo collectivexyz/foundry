@@ -34,17 +34,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
-        name: GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body_path: CHANGELOG.md
-          draft: false
-          prerelease: false        
-      -
         name: Generate repository name
         run: |
           echo "REPOSITORY_PATH=$( echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]' )" >> ${GITHUB_ENV}
@@ -55,10 +44,21 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
-          push: ${{ github.event_name == 'release' && github.event.action == 'created' }}
+          push: true
           build-args: |
             VERSION=${{ github.event.release.tag_name }}
           tags: |
             ghcr.io/${{ env.REPOSITORY_PATH }}:v${{ github.event.release.tag_name }}
             ghcr.io/${{ env.REPOSITORY_PATH }}:${{ env.REPOSITORY_SHA }}
             ghcr.io/${{ env.REPOSITORY_PATH }}:latest
+      -
+        name: GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: false
+          prerelease: false
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body_path: CHANGELOG.md

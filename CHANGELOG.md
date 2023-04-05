@@ -1,3 +1,7 @@
+# 0.9.29 (2023-04-05)
+
+* always push build on tag
+
 # 0.9.28 (2023-04-05)
 
 * move release before the build to allow push action to work
