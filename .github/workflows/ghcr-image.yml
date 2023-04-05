@@ -20,17 +20,6 @@ jobs:
         name: Checkout
         uses: actions/checkout@v3
       -
-        name: GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body_path: CHANGELOG.md
-          draft: false
-          prerelease: false        
-      -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       -
@@ -62,3 +51,14 @@ jobs:
             ghcr.io/${{ env.REPOSITORY_PATH }}:v${{ github.event.release.tag_name }}
             ghcr.io/${{ env.REPOSITORY_PATH }}:${{ env.REPOSITORY_SHA }}
             ghcr.io/${{ env.REPOSITORY_PATH }}:latest
+      -
+        name: GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false        

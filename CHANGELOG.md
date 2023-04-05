@@ -1,3 +1,7 @@
+# 0.9.27 (2023-04-05)
+
+* move release post build
+
 # 0.9.26 (2023-04-05)
 
 * provide ci and deploy workflow separately
