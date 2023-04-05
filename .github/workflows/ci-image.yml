@@ -1,4 +1,4 @@
-name: Deploy Image CI
+name: Build Image CI
 
 on:
   workflow_dispatch:
