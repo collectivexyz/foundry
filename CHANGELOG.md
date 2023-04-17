@@ -1,3 +1,7 @@
+# 0.9.30 (2023-04-17)
+
+* update to latest nightly build
+
 # 0.9.29 (2023-04-05)
 
 * always push build on tag
