@@ -1,3 +1,7 @@
+# 0.9.31 (2023-04-21)
+
+* Node 18.16.0
+
 # 0.9.30 (2023-04-17)
 
 * update to latest nightly build
