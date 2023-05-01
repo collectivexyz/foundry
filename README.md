@@ -2,8 +2,8 @@
 
 Everything needed to develop smart contracts with Ethereum and [Foundry](https://github.com/foundry-rs/foundry)
 
-GO: 1.20.2
-ETH: 1.11.5
+GO: 1.20.3
+ETH: 1.11.6
 SOLC: 0.8.19
 
 #### Deployments 
@@ -25,6 +25,8 @@ SOLC: 0.8.19
 
   To build locally, run:
   ` $ sh build.sh `
+
+  Then it can be used normally, as below.
 
 ### Architecture
 * linux/amd64 
