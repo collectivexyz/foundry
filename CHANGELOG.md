@@ -1,3 +1,8 @@
+# 0.9.33 (2023-05-10)
+
+* latest foundry
+* slight cleanup to container dependencies
+
 # 0.9.32 (2023-05-01)
 
 * GO: 1.20.3

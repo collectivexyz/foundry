@@ -4,14 +4,14 @@ FROM debian:stable-slim as go-builder
 ARG TARGETARCH
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
-  apt update && \
-  apt install -y -q --no-install-recommends \
+    apt update && \
+    apt install -y -q --no-install-recommends \
     git curl gnupg2 build-essential coreutils \
     openssl libssl-dev pkg-config \
     ca-certificates apt-transport-https \
-  python3 && \
-  apt clean && \
-  rm -rf /var/lib/apt/lists/*
+    python3 && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
 
 ## Go Lang
 ARG GO_VERSION=1.20.3
@@ -40,15 +40,15 @@ ARG TARGETARCH
 ARG MAXIMUM_THREADS=2
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
-  apt update && \
-  apt install -y -q --no-install-recommends \
+    apt update && \
+    apt install -y -q --no-install-recommends \
     git curl gnupg2 build-essential linux-headers-${TARGETARCH} \
     g++-10 libc6-dev \ 
     openssl libssl-dev pkg-config \
     ca-certificates apt-transport-https \
-  python3 && \
-  apt clean && \
-  rm -rf /var/lib/apt/lists/*
+    python3 && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN useradd --create-home -s /bin/bash mr
 RUN usermod -a -G sudo mr
@@ -92,7 +92,8 @@ FROM debian:stable-slim as node18-slim
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt update && \
     apt install -y -q --no-install-recommends \
-    build-essential git curl ca-certificates apt-transport-https && \
+    build-essential git gnupg2 curl \
+    ca-certificates apt-transport-https && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -118,7 +119,6 @@ ARG TARGETARCH
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt update && \
   apt install -y -q --no-install-recommends \
-    git gnupg2 curl build-essential \
     libz3-dev z3 \
     ca-certificates apt-transport-https \
     sudo ripgrep procps \
