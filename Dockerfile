@@ -74,12 +74,10 @@ RUN git clone https://github.com/foundry-rs/foundry
 WORKDIR /build/foundry
 RUN git -c advice.detachedHead=false checkout nightly && \
     . $HOME/.cargo/env && \
-    [ "$TARGETARCH" = "arm64" ] && export CFLAGS=-mno-outline-atomics || true && \
-    echo "CFLAGS=${CFLAGS}" && \
     THREAD_NUMBER=$(cat /proc/cpuinfo | grep processor | wc -l) && \
     MAX_THREADS=$(( THREAD_NUMBER > ${MAXIMUM_THREADS} ?  ${MAXIMUM_THREADS} : THREAD_NUMBER )) && \
     echo "building with ${MAX_THREADS} threads" && \
-    cargo build --jobs ${MAX_THREADS} --release && \
+    cargo build --jobs ${MAX_THREADS} --release --timings && \
     strip target/release/forge && \
     strip target/release/cast && \
     strip target/release/anvil && \
