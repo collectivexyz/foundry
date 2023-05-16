@@ -2,9 +2,9 @@
 
 Everything needed to develop smart contracts with Ethereum and [Foundry](https://github.com/foundry-rs/foundry)
 
-GO: 1.20.3
+GO: 1.20.4
 ETH: 1.11.6
-SOLC: 0.8.19
+SOLC: 0.8.20
 
 #### Deployments 
 
