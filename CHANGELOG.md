@@ -1,3 +1,8 @@
+# 0.9.34 (2023-05-16)
+
+* solc 0.8.20
+* latest nightly build of foundry
+
 # 0.9.33 (2023-05-10)
 
 * latest foundry
