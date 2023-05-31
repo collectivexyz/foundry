@@ -24,7 +24,7 @@ RUN go version
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.11.6
+ARG ETH_VERSION=1.12.0
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
 RUN echo 'SHA256 of this go-ethereum package...'
 RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
@@ -72,7 +72,9 @@ ENV PATH=$PATH:~mr/.cargo/bin
 RUN git clone https://github.com/foundry-rs/foundry
 
 WORKDIR /build/foundry
-RUN git -c advice.detachedHead=false checkout nightly && \
+RUN git pull && LATEST_TAG=$(git describe --tags --abbrev=0) || LATEST_TAG=master && \
+    echo "building tag ${LATEST_TAG}" && \
+    git -c advice.detachedHead=false checkout nightly && \
     . $HOME/.cargo/env && \
     THREAD_NUMBER=$(cat /proc/cpuinfo | grep processor | wc -l) && \
     MAX_THREADS=$(( THREAD_NUMBER > ${MAXIMUM_THREADS} ?  ${MAXIMUM_THREADS} : THREAD_NUMBER )) && \
@@ -142,7 +144,7 @@ COPY --chown=mr:mr --from=foundry-builder /home/mr/.cargo /home/mr/.cargo
 COPY --from=go-builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.11.6
+ARG ETH_VERSION=1.12.0
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry

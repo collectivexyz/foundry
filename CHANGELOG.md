@@ -1,3 +1,8 @@
+# 0.9.36 (2023-05-31)
+
+* latest foundry commit
+* forge selectors
+
 # 0.9.35 (2023-05-16)
 
 * go 1.20.4
