@@ -162,4 +162,5 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vcs-url="git@github.com:collectivexyz/foundry.git" \
     org.label-schema.vendor="collectivexyz" \
     org.label-schema.version=$VERSION \
-    org.label-schema.schema-version="1.0"
+    org.label-schema.schema-version="1.0" \
+    org.opencontainers.image.description="Foundry and Ethereum Development Container"
