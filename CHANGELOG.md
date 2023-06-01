@@ -1,3 +1,7 @@
+# 0.9.37 (2023-06-01)
+
+* bumps latest EVM patch
+
 # 0.9.36 (2023-05-31)
 
 * latest foundry commit
