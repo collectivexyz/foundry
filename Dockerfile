@@ -42,8 +42,8 @@ ARG MAXIMUM_THREADS=2
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt update && \
     apt install -y -q --no-install-recommends \
-    git curl gnupg2 build-essential linux-headers-${TARGETARCH} \
-    g++-10 libc6-dev \ 
+    git curl gnupg2 build-essential \
+    linux-headers-${TARGETARCH} libc6-dev \ 
     openssl libssl-dev pkg-config \
     ca-certificates apt-transport-https \
     python3 && \
