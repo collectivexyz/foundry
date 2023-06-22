@@ -80,6 +80,7 @@ RUN git pull && LATEST_TAG=$(git describe --tags --abbrev=0) || LATEST_TAG=maste
     MAX_THREADS=$(( THREAD_NUMBER > ${MAXIMUM_THREADS} ?  ${MAXIMUM_THREADS} : THREAD_NUMBER )) && \
     echo "building with ${MAX_THREADS} threads" && \
     cargo build --jobs ${MAX_THREADS} --release && \
+    objdump -j .comment -s target/release/forge && \
     strip target/release/forge && \
     strip target/release/cast && \
     strip target/release/anvil && \
@@ -100,7 +101,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v18.16.0
+ENV NODE_VERSION=v18.16.1
 
 ADD https://raw.githubusercontent.com/creationix/nvm/master/install.sh /usr/local/etc/nvm/install.sh
 RUN bash /usr/local/etc/nvm/install.sh && \
