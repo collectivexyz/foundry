@@ -86,7 +86,7 @@ RUN git pull && LATEST_TAG=$(git describe --tags --abbrev=0) || LATEST_TAG=maste
     strip target/release/anvil && \
     strip target/release/chisel
 
-RUN git rev-parse HEAD > /build/foundry_commit_sha
+RUN git rev-parse HEAD > /build/foundry_commit_sha256
 
 FROM debian:stable-slim as node18-slim
 
@@ -149,7 +149,7 @@ ARG ETH_VERSION=1.12.0
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry
-COPY --from=foundry-builder /build/foundry_commit_sha /usr/local/etc/foundry_commit_sha
+COPY --from=foundry-builder /build/foundry_commit_sha256 /usr/local/etc/foundry_commit_sha256
 COPY --from=foundry-builder /build/foundry/target/release/forge /usr/local/bin/forge
 COPY --from=foundry-builder /build/foundry/target/release/cast /usr/local/bin/cast
 COPY --from=foundry-builder /build/foundry/target/release/anvil /usr/local/bin/anvil

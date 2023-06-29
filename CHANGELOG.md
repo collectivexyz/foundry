@@ -1,3 +1,7 @@
+# 0.9.40 (2023-06-29)
+
+* vm.skip support for skipping tests
+
 # 0.9.39 (2023-06-22)
 
 * Node 18.16.1
