@@ -14,7 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     rm -rf /var/lib/apt/lists/*
 
 ## Go Lang
-ARG GO_VERSION=1.20.5
+ARG GO_VERSION=1.20.6
 ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
 RUN echo 'SHA256 of this go source package...'
 RUN cat /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum 

@@ -1,3 +1,8 @@
+# 0.9.41 (2023-07-17)
+
+* go lang 1.20.6
+* latest foundry
+
 # 0.9.40 (2023-06-29)
 
 * vm.skip support for skipping tests
