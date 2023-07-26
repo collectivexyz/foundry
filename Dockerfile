@@ -76,7 +76,7 @@ RUN git pull && LATEST_TAG=$(git describe --tags --abbrev=0) || LATEST_TAG=maste
     echo "building tag ${LATEST_TAG}" && \
     git -c advice.detachedHead=false checkout nightly && \
     . $HOME/.cargo/env && \
-    THREAD_NUMBER=$(cat /proc/cpuinfo | grep processor | wc -l) && \
+    THREAD_NUMBER=$(cat /proc/cpuinfo | grep -c ^processor) && \
     MAX_THREADS=$(( THREAD_NUMBER > ${MAXIMUM_THREADS} ?  ${MAXIMUM_THREADS} : THREAD_NUMBER )) && \
     echo "building with ${MAX_THREADS} threads" && \
     cargo build --jobs ${MAX_THREADS} --release && \
