@@ -46,9 +46,9 @@ jobs:
           platforms: linux/amd64
           push: true
           build-args: |
-            VERSION=${{ github.event.release.tag_name }}
+            VERSION=${{ github.ref_name }}
           tags: |
-            ghcr.io/${{ env.REPOSITORY_PATH }}:v${{ github.event.release.tag_name }}
+            ghcr.io/${{ env.REPOSITORY_PATH }}:v${{ github.ref_name }}
             ghcr.io/${{ env.REPOSITORY_PATH }}:${{ env.REPOSITORY_SHA }}
             ghcr.io/${{ env.REPOSITORY_PATH }}:latest
       -
@@ -59,6 +59,6 @@ jobs:
         with:
           draft: false
           prerelease: false
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          release_name: v${{ github.ref_name }}
           body_path: CHANGELOG.md

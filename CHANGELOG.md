@@ -1,3 +1,8 @@
+# 0.9.43 (2023-08-02)
+
+* go lang 1.20.7 - security update
+* latest foundry
+
 # 0.9.42 (2023-07-26)
 
 * Node 18.17.0
