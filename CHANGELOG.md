@@ -1,3 +1,7 @@
+# 0.9.44 (2023-08-11)
+
+* add build-essential to dev container
+
 # 0.9.43 (2023-08-02)
 
 * go lang 1.20.7 - security update

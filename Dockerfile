@@ -120,7 +120,7 @@ ARG TARGETARCH
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt update && \
   apt install -y -q --no-install-recommends \
-    libz3-dev z3 \
+    libz3-dev z3 build-essential \
     ca-certificates apt-transport-https \
     sudo ripgrep procps \
     python3 python3-pip python3-dev && \
