@@ -1,3 +1,7 @@
+# 0.9.45 (2023-09-11)
+
+* updates: go, eth and foundry
+
 # 0.9.44 (2023-08-11)
 
 * add build-essential to dev container

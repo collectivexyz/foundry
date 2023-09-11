@@ -14,7 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     rm -rf /var/lib/apt/lists/*
 
 ## Go Lang
-ARG GO_VERSION=1.20.7
+ARG GO_VERSION=1.21.1
 ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
 RUN echo 'SHA256 of this go source package...'
 RUN cat /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum 
@@ -24,7 +24,7 @@ RUN go version
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.12.0
+ARG ETH_VERSION=1.12.2
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
 RUN echo 'SHA256 of this go-ethereum package...'
 RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
@@ -101,7 +101,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v18.17.0
+ENV NODE_VERSION=v18.17.1
 
 ADD https://raw.githubusercontent.com/creationix/nvm/master/install.sh /usr/local/etc/nvm/install.sh
 RUN bash /usr/local/etc/nvm/install.sh && \
@@ -145,7 +145,7 @@ COPY --chown=mr:mr --from=foundry-builder /home/mr/.cargo /home/mr/.cargo
 COPY --from=go-builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.12.0
+ARG ETH_VERSION=1.12.2
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry
@@ -164,4 +164,4 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vendor="collectivexyz" \
     org.label-schema.version=$VERSION \
     org.label-schema.schema-version="1.0" \
-    org.opencontainers.image.description="Foundry and Ethereum Development Container"
+    org.opencontainers.image.description="Foundry and Ethereum Development Container for Visual Studio Code"

@@ -1,6 +1,6 @@
 # Foundry Development Container for Docker and VS Code
 
-This development container for Visual Studio Code is a pre-configured and isolated environment that allows you to develop, build, and test your software projects using consistent tools and settings.   This development container can be use in Docker to create a standardized and reproducible environment for your development workflow. This is useful when working on projects that require specific versions of programming languages, libraries, tools, and other dependencies. By using this development container, you can ensure that all members of your development team work with the same development environment, reducing issues related to differences in configurations and dependencies.
+This development container for Visual Studio Code is a pre-configured and isolated environment that allows you to develop, build, and test your software projects using consistent tools and settings.   This development container can be used in Docker to create a standardized and reproducible environment for your development workflow. This is useful when working on projects that require specific versions of programming languages, libraries, tools, and other dependencies. By using this development container, you can ensure that all members of your development team work with the same development environment, reducing issues related to differences in configurations and dependencies.
 
 Key benefits of using development containers in Visual Studio Code include:
 
@@ -20,9 +20,9 @@ To use this development container in Visual Studio Code, specify the `Dockerfile
 
 Everything needed to develop smart contracts with Ethereum and [Foundry](https://github.com/foundry-rs/foundry)
 
-GO: 1.20.6
-ETH: 1.11.6
-SOLC: 0.8.20
+GO: 1.21.1
+ETH: 1.12.2
+SOLC: 0.8.21
 
 #### Deployments 
 
@@ -39,7 +39,7 @@ SOLC: 0.8.20
 
 ## arm64
 
-  It's possible to use this container on Apple Silicon but an image is not provided in the ghcr registry at this time.
+  It's possible to use this container on Apple silicon but an image is not provided in the ghcr registry at this time.
 
   To build locally, run:
   ` $ sh build.sh `
