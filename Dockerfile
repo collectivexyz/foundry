@@ -156,6 +156,8 @@ RUN strip ${FOUNDRY_INSTALL_DIR}/bin/cast
 RUN strip ${FOUNDRY_INSTALL_DIR}/bin/anvil
 RUN strip ${FOUNDRY_INSTALL_DIR}/bin/chisel
 
+RUN yamlfmt -lint .github/workflows/*.yml
+
 LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.name="foundry" \
     org.label-schema.description="Foundry RS Development Container" \
