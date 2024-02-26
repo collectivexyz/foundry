@@ -148,7 +148,7 @@ ENV USER=foundry
 USER foundry
 ENV FOUNDRY_INSTALL_DIR=/home/${USER}/.foundry
 COPY --from=foundry-builder ${FOUNDRY_INSTALL_DIR} ${FOUNDRY_INSTALL_DIR}
-ENV PATH=$PATH:${FOUNDRY_INSTALL_DIR}/bin
+ENV PATH=${PATH}:${FOUNDRY_INSTALL_DIR}/bin:/usr/local/go/bin
 RUN foundryup
 
 RUN strip ${FOUNDRY_INSTALL_DIR}/bin/forge
