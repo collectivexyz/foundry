@@ -1,3 +1,7 @@
+# 1.0.0 (2024-02-26)
+
+* use foundryup to deploy prebuild binaries
+
 # 0.9.45 (2023-09-11)
 
 * updates: go, eth and foundry

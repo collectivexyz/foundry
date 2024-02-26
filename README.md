@@ -20,9 +20,9 @@ To use this development container in Visual Studio Code, specify the `Dockerfile
 
 Everything needed to develop smart contracts with Ethereum and [Foundry](https://github.com/foundry-rs/foundry)
 
-GO: 1.21.1
-ETH: 1.12.2
-SOLC: 0.8.21
+GO: 1.22.0
+ETH: 1.13.13
+SOLC: 0.8.24
 
 #### Deployments 
 

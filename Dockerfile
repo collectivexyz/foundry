@@ -14,17 +14,25 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     rm -rf /var/lib/apt/lists/*
 
 ## Go Lang
-ARG GO_VERSION=1.21.1
-ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
+ARG GO_VERSION=1.22.0
+ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
 RUN echo 'SHA256 of this go source package...'
-RUN cat /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum 
-RUN tar -C /usr/local -xzf /go-ethereum/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
+RUN cat /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum 
+RUN tar -C /usr/local -xzf /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
 ENV PATH=$PATH:/usr/local/go/bin
 RUN go version
 
+## Yaml Format
+WORKDIR /yamlfmt
+ENV GOBIN=/usr/local/go/bin
+ENV PATH=$PATH:${GOBIN}
+RUN go install github.com/google/yamlfmt/cmd/yamlfmt@latest
+RUN ls -lR /usr/local/go/bin/yamlfmt && strip /usr/local/go/bin/yamlfmt && ls -lR /usr/local/go/bin/yamlfmt
+RUN yamlfmt --version
+
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.12.2
+ARG ETH_VERSION=1.13.13
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
 RUN echo 'SHA256 of this go-ethereum package...'
 RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
@@ -38,6 +46,7 @@ FROM debian:stable-slim as foundry-builder
 # DOCKER_BUILDKIT=1 docker build . -t ...
 ARG TARGETARCH
 ARG MAXIMUM_THREADS=2
+ARG CARGO_INCREMENTAL=0
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt update && \
@@ -50,43 +59,29 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN useradd --create-home -s /bin/bash mr
-RUN usermod -a -G sudo mr
-RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
+RUN useradd --create-home -s /bin/bash foundry
+RUN usermod -a -G sudo foundry
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 WORKDIR /rustup
 ## Rust
 ADD https://sh.rustup.rs /rustup/rustup.sh
-RUN chmod 755 /rustup/rustup.sh
+RUN chmod 555 /rustup/rustup.sh
 
-ENV USER=mr
-USER mr
+## FoundryUp
+ADD https://foundry.paradigm.xyz /rustup/foundryup.sh
+RUN chmod 555 /rustup/foundryup.sh
+
+ENV USER=foundry
+USER foundry
 RUN /rustup/rustup.sh -y --default-toolchain stable --profile minimal
 
-## Foundry
-WORKDIR /build
-
 # latest https://github.com/foundry-rs/foundry
-ENV PATH=$PATH:~mr/.cargo/bin
-RUN git clone https://github.com/foundry-rs/foundry
+ENV PATH=$PATH:~foundry/.cargo/bin
 
+## Foundry
 WORKDIR /build/foundry
-RUN git pull && LATEST_TAG=$(git describe --tags --abbrev=0) || LATEST_TAG=master && \
-    echo "building tag ${LATEST_TAG}" && \
-    git -c advice.detachedHead=false checkout nightly && \
-    . $HOME/.cargo/env && \
-    THREAD_NUMBER=$(cat /proc/cpuinfo | grep -c ^processor) && \
-    MAX_THREADS=$(( THREAD_NUMBER > ${MAXIMUM_THREADS} ?  ${MAXIMUM_THREADS} : THREAD_NUMBER )) && \
-    echo "building with ${MAX_THREADS} threads" && \
-    cargo build --jobs ${MAX_THREADS} --release && \
-    objdump -j .comment -s target/release/forge && \
-    strip target/release/forge && \
-    strip target/release/cast && \
-    strip target/release/anvil && \
-    strip target/release/chisel
-
-RUN git rev-parse HEAD > /build/foundry_commit_sha256
+RUN /rustup/foundryup.sh
 
 FROM debian:stable-slim as node18-slim
 
@@ -101,7 +96,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v18.17.1
+ENV NODE_VERSION=v20.11.1
 
 ADD https://raw.githubusercontent.com/creationix/nvm/master/install.sh /usr/local/etc/nvm/install.sh
 RUN bash /usr/local/etc/nvm/install.sh && \
@@ -129,9 +124,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 RUN echo "building platform $(uname -m)"
 
-RUN useradd --create-home -s /bin/bash mr
-RUN usermod -a -G sudo mr
-RUN echo '%mr ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN useradd --create-home -s /bin/bash foundry
+RUN usermod -a -G sudo foundry
+RUN echo '%foundry ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # SOLC
 COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/solc /usr/local/bin
@@ -139,21 +134,27 @@ COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/yul-phaser /usr/local
 RUN solc --version
 
 ## Rust 
-COPY --chown=mr:mr --from=foundry-builder /home/mr/.cargo /home/mr/.cargo
+COPY --chown=foundry:foundry --from=foundry-builder /home/foundry/.cargo /home/foundry/.cargo
 
 # GO LANG
 COPY --from=go-builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.12.2
+ARG ETH_VERSION=1.13.13
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
-# Foundry
-COPY --from=foundry-builder /build/foundry_commit_sha256 /usr/local/etc/foundry_commit_sha256
-COPY --from=foundry-builder /build/foundry/target/release/forge /usr/local/bin/forge
-COPY --from=foundry-builder /build/foundry/target/release/cast /usr/local/bin/cast
-COPY --from=foundry-builder /build/foundry/target/release/anvil /usr/local/bin/anvil
-COPY --from=foundry-builder /build/foundry/target/release/chisel /usr/local/bin/chisel
+# Foundry Up
+ENV USER=foundry
+USER foundry
+ENV FOUNDRY_INSTALL_DIR=/home/${USER}/.foundry
+COPY --from=foundry-builder ${FOUNDRY_INSTALL_DIR} ${FOUNDRY_INSTALL_DIR}
+ENV PATH=$PATH:${FOUNDRY_INSTALL_DIR}/bin
+RUN foundryup
+
+RUN strip ${FOUNDRY_INSTALL_DIR}/bin/forge
+RUN strip ${FOUNDRY_INSTALL_DIR}/bin/cast
+RUN strip ${FOUNDRY_INSTALL_DIR}/bin/anvil
+RUN strip ${FOUNDRY_INSTALL_DIR}/bin/chisel
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.name="foundry" \
@@ -161,7 +162,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.url="https://github.com/collectivexyz/foundry" \
     org.label-schema.vcs-ref=$VCS_REF \
     org.label-schema.vcs-url="git@github.com:collectivexyz/foundry.git" \
-    org.label-schema.vendor="collectivexyz" \
+    org.label-schema.vendor="Collective" \
     org.label-schema.version=$VERSION \
     org.label-schema.schema-version="1.0" \
     org.opencontainers.image.description="Foundry and Ethereum Development Container for Visual Studio Code"
