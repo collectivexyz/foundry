@@ -1,3 +1,7 @@
+# 1.0.1 (2024-04-10)
+
+* go 1.22.2, geth 1.13.14, solc 0.8.25
+
 # 1.0.0 (2024-02-26)
 
 * use foundryup to deploy prebuild binaries
