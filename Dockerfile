@@ -32,7 +32,7 @@ RUN yamlfmt --version
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.13.14
+ARG ETH_VERSION=1.14.0
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
 RUN echo 'SHA256 of this go-ethereum package...'
 RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
@@ -140,7 +140,7 @@ COPY --chown=foundry:foundry --from=foundry-builder /home/foundry/.cargo /home/f
 COPY --from=go-builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.13.14
+ARG ETH_VERSION=1.14.0
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry Up
