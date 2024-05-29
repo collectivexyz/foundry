@@ -14,7 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     rm -rf /var/lib/apt/lists/*
 
 ## Go Lang
-ARG GO_VERSION=1.22.2
+ARG GO_VERSION=1.22.3
 ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
 RUN echo 'SHA256 of this go source package...'
 RUN cat /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum 
@@ -32,7 +32,7 @@ RUN yamlfmt --version
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.14.0
+ARG ETH_VERSION=1.14.3
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
 RUN echo 'SHA256 of this go-ethereum package...'
 RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
@@ -96,7 +96,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v20.12.2
+ENV NODE_VERSION=v22.2.0
 
 ADD https://raw.githubusercontent.com/creationix/nvm/master/install.sh /usr/local/etc/nvm/install.sh
 RUN bash /usr/local/etc/nvm/install.sh && \
@@ -117,7 +117,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   apt install -y -q --no-install-recommends \
     libz3-dev z3 build-essential \
     ca-certificates apt-transport-https \
-    sudo ripgrep procps \
+    sudo ripgrep procps openssh-client \
     python3 python3-pip python3-dev && \
   apt clean && \
   rm -rf /var/lib/apt/lists/*
@@ -140,7 +140,7 @@ COPY --chown=foundry:foundry --from=foundry-builder /home/foundry/.cargo /home/f
 COPY --from=go-builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.14.0
+ARG ETH_VERSION=1.14.3
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry Up

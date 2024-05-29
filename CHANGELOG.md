@@ -1,3 +1,7 @@
+# 1.0.3 (2024-05-29)
+
+* geth 1.14.3, go 1.22.3, node 22.2.0,  latest foundry
+
 # 1.0.2 (2024-04-25)
 
 * geth 1.14.0, latest foundry
