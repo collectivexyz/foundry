@@ -14,7 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     rm -rf /var/lib/apt/lists/*
 
 ## Go Lang
-ARG GO_VERSION=1.22.5
+ARG GO_VERSION=1.23.0
 ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
 RUN echo 'SHA256 of this go source package...'
 RUN cat /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum 
@@ -32,7 +32,7 @@ RUN yamlfmt --version
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.14.7
+ARG ETH_VERSION=1.14.8
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
 RUN echo 'SHA256 of this go-ethereum package...'
 RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
@@ -96,7 +96,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v22.3.0
+ENV NODE_VERSION=v22.8.0
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 RUN bash -c ". $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION && nvm use default"
@@ -139,7 +139,7 @@ COPY --chown=foundry:foundry --from=foundry-builder /home/foundry/.cargo /home/f
 COPY --from=go-builder /usr/local/go /usr/local/go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.14.7
+ARG ETH_VERSION=1.14.8
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry Up
