@@ -1,38 +1,18 @@
-FROM debian:stable-slim as go-builder
+# Stage 1: Build yamlfmt
+FROM golang:1 AS go-builder
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
 ARG TARGETARCH
 
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt update && \
-    apt install -y -q --no-install-recommends \
-    git curl gnupg2 build-essential coreutils \
-    openssl libssl-dev pkg-config \
-    ca-certificates apt-transport-https \
-    python3 && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/*
-
-## Go Lang
-ARG GO_VERSION=1.23.0
-ADD https://go.dev/dl/go${GO_VERSION}.linux-$TARGETARCH.tar.gz /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
-RUN echo 'SHA256 of this go source package...'
-RUN cat /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz | sha256sum 
-RUN tar -C /usr/local -xzf /goinstall/go${GO_VERSION}.linux-$TARGETARCH.tar.gz
-ENV PATH=$PATH:/usr/local/go/bin
-RUN go version
-
-## Yaml Format
+# Install yamlfmt
 WORKDIR /yamlfmt
-ENV GOBIN=/usr/local/go/bin
-ENV PATH=$PATH:${GOBIN}
-RUN go install github.com/google/yamlfmt/cmd/yamlfmt@latest
-RUN ls -lR /usr/local/go/bin/yamlfmt && strip /usr/local/go/bin/yamlfmt && ls -lR /usr/local/go/bin/yamlfmt
-RUN yamlfmt --version
+RUN go install github.com/google/yamlfmt/cmd/yamlfmt@latest && \
+    strip $(which yamlfmt) && \
+    yamlfmt --version
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.14.8
+ARG ETH_VERSION=1.14.11
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
 RUN echo 'SHA256 of this go-ethereum package...'
 RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
@@ -96,7 +76,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v22.8.0
+ENV NODE_VERSION=v22.11.0
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 RUN bash -c ". $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION && nvm use default"
@@ -136,10 +116,10 @@ RUN solc --version
 COPY --chown=foundry:foundry --from=foundry-builder /home/foundry/.cargo /home/foundry/.cargo
 
 # GO LANG
-COPY --from=go-builder /usr/local/go /usr/local/go
+COPY --from=go-builder /go /go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.14.8
+ARG ETH_VERSION=1.14.11
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry Up
@@ -147,7 +127,7 @@ ENV USER=foundry
 USER foundry
 ENV FOUNDRY_INSTALL_DIR=/home/${USER}/.foundry
 COPY --from=foundry-builder ${FOUNDRY_INSTALL_DIR} ${FOUNDRY_INSTALL_DIR}
-ENV PATH=${PATH}:${FOUNDRY_INSTALL_DIR}/bin:/usr/local/go/bin
+ENV PATH=${PATH}:${FOUNDRY_INSTALL_DIR}/bin:/go/bin
 RUN foundryup
 
 RUN strip ${FOUNDRY_INSTALL_DIR}/bin/forge

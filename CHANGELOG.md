@@ -1,3 +1,7 @@
+# 1.0.7 (2024-11-07)
+
+* geth 1.14.11, latest foundry, node 22.11.0
+
 # 1.0.6 (2024-09-04)
 
 * geth 1.14.8, go 1.23.0, latest foundry, solc 0.8.27
