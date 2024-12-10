@@ -12,7 +12,7 @@ RUN go install github.com/google/yamlfmt/cmd/yamlfmt@latest && \
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.14.11
+ARG ETH_VERSION=1.14.12
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
 RUN echo 'SHA256 of this go-ethereum package...'
 RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
@@ -76,7 +76,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v22.11.0
+ENV NODE_VERSION=v22.12.0
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 RUN bash -c ". $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION && nvm use default"
@@ -119,7 +119,7 @@ COPY --chown=foundry:foundry --from=foundry-builder /home/foundry/.cargo /home/f
 COPY --from=go-builder /go /go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.14.11
+ARG ETH_VERSION=1.14.12
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry Up
@@ -134,8 +134,6 @@ RUN strip ${FOUNDRY_INSTALL_DIR}/bin/forge
 RUN strip ${FOUNDRY_INSTALL_DIR}/bin/cast
 RUN strip ${FOUNDRY_INSTALL_DIR}/bin/anvil
 RUN strip ${FOUNDRY_INSTALL_DIR}/bin/chisel
-
-RUN yamlfmt -lint .github/workflows/*.yml
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.name="foundry" \

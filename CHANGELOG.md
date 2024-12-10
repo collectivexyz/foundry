@@ -1,3 +1,7 @@
+# 1.0.8 (2024-12-10)
+
+* latest foundry, update go, go-ethereum and node
+
 # 1.0.7 (2024-11-07)
 
 * geth 1.14.11, latest foundry, node 22.11.0
