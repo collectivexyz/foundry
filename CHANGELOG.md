@@ -1,3 +1,7 @@
+# 1.0.9 (2024-12-12)
+
+* add support for debian:unstable-slim
+
 # 1.0.8 (2024-12-10)
 
 * latest foundry, update go, go-ethereum and node

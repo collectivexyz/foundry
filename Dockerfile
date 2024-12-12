@@ -1,8 +1,11 @@
+ARG IMAGE_VERSION
+ARG TARGETARCH
+
 # Stage 1: Build yamlfmt
 FROM golang:1 AS go-builder
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
-ARG TARGETARCH
+ARG ETH_VERSION=1.14.12
 
 # Install yamlfmt
 WORKDIR /yamlfmt
@@ -12,7 +15,7 @@ RUN go install github.com/google/yamlfmt/cmd/yamlfmt@latest && \
 
 ## Go Ethereum
 WORKDIR /go-ethereum
-ARG ETH_VERSION=1.14.12
+
 ADD https://github.com/ethereum/go-ethereum/archive/refs/tags/v${ETH_VERSION}.tar.gz /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz
 RUN echo 'SHA256 of this go-ethereum package...'
 RUN cat /go-ethereum/go-ethereum-${ETH_VERSION}.tar.gz | sha256sum 
@@ -21,23 +24,27 @@ WORKDIR /go-ethereum/go-ethereum-${ETH_VERSION}
 RUN go mod download 
 RUN go run build/ci.go install
 
-FROM debian:stable-slim as foundry-builder
+# Use the build argument in the FROM statement
+FROM debian:$IMAGE_VERSION AS foundry-builder
+
+# Example build steps
+RUN echo "Using Debian version: ${IMAGE_VERSION}"
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
-ARG TARGETARCH
-ARG MAXIMUM_THREADS=2
-ARG CARGO_INCREMENTAL=0
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt update && \
-    apt install -y -q --no-install-recommends \
-    git curl gnupg2 build-essential \
-    linux-headers-${TARGETARCH} libc6-dev \ 
-    openssl libssl-dev pkg-config \
-    ca-certificates apt-transport-https \
-    python3 && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get update && \
+    apt-get install -y -q --no-install-recommends \
+      ca-certificates \
+      curl \
+      git \
+      gnupg2 \
+      openssl \
+      pkg-config \
+      python3 \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN useradd --create-home -s /bin/bash foundry
 RUN usermod -a -G sudo foundry
@@ -63,15 +70,23 @@ ENV PATH=$PATH:~foundry/.cargo/bin
 WORKDIR /build/foundry
 RUN /rustup/foundryup.sh
 
-FROM debian:stable-slim as node18-slim
+# Use the build argument in the FROM statement
+FROM debian:${IMAGE_VERSION} AS node-slim
+
+# Example build steps
+RUN echo "Using Debian version: ${IMAGE_VERSION}"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt update && \
-    apt install -y -q --no-install-recommends \
-    build-essential git gnupg2 curl \
-    ca-certificates apt-transport-https && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get update && \
+    apt-get install -y -q --no-install-recommends \
+      build-essential \
+      ca-certificates \
+      curl \
+      git \
+      gnupg2 \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
@@ -88,18 +103,25 @@ ENV PATH      ${NVM_NODE_PATH}/bin:$PATH
 RUN npm install npm -g
 RUN npm install yarn -g
 
-FROM node18-slim
-ARG TARGETARCH
+FROM node-slim
+
+ARG ETH_VERSION=1.14.12
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
-  apt update && \
-  apt install -y -q --no-install-recommends \
-    libz3-dev z3 build-essential \
-    ca-certificates apt-transport-https \
-    sudo ripgrep procps openssh-client \
-    python3 python3-pip python3-dev && \
-  apt clean && \
-  rm -rf /var/lib/apt/lists/*
+  apt-get update && \
+  apt-get install -y -q --no-install-recommends \
+    libz3-dev \
+    openssh-client \
+    procps \
+    python3 \
+    python3-dev \
+    python3-pip \
+    ripgrep \
+    sudo \
+    z3 \
+    && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN echo "building platform $(uname -m)"
 
@@ -119,7 +141,6 @@ COPY --chown=foundry:foundry --from=foundry-builder /home/foundry/.cargo /home/f
 COPY --from=go-builder /go /go
 
 ## GO Ethereum Binaries
-ARG ETH_VERSION=1.14.12
 COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/local/bin
 
 # Foundry Up
