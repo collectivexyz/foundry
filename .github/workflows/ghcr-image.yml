@@ -30,6 +30,14 @@ jobs:
         run: |
           echo "REPOSITORY_PATH=$( echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]' )" >> ${GITHUB_ENV}
           echo "REPOSITORY_SHA=$( echo ${GITHUB_SHA} | cut -c 1-7 )" >> ${GITHUB_ENV}
+      - name: Build and Push Unstable
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: VERSION=${{ github.ref_name }} IMAGE_VERSION=unstable-slim
+          tags: ghcr.io/${{ env.REPOSITORY_PATH }}:v${{ github.ref_name }}-unstable-slim ghcr.io/${{ env.REPOSITORY_PATH }}:unstable-slim
       - name: Build and Push Stable
         uses: docker/build-push-action@v3
         with:
@@ -45,14 +53,6 @@ jobs:
             ghcr.io/${{ env.REPOSITORY_PATH }}:${{ env.REPOSITORY_SHA }}
             ghcr.io/${{ env.REPOSITORY_PATH }}:stable-slim
             ghcr.io/${{ env.REPOSITORY_PATH }}:latest
-      - name: Build and Push Unstable
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          build-args: VERSION=${{ github.ref_name }} IMAGE_VERSION=unstable-slim
-          tags: ghcr.io/${{ env.REPOSITORY_PATH }}:v${{ github.ref_name }}-unstable-slim ghcr.io/${{ env.REPOSITORY_PATH }}:unstable-slim
       - name: GitHub Release
         uses: actions/create-release@v1
         env:
