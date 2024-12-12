@@ -1,4 +1,4 @@
-ARG IMAGE_VERSION
+ARG IMAGE_VERSION=stable-slim
 ARG TARGETARCH
 
 # Stage 1: Build yamlfmt
