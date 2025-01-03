@@ -4,7 +4,8 @@ on:
     tags:
       - "*"
 permissions:
-  contents: write
+  contents: write # Needed to create releases
+  packages: write # Required to push to ghcr.io
 concurrency:
   group: "docker-image"
   cancel-in-progress: true
