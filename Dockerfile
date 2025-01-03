@@ -147,7 +147,7 @@ COPY --from=go-builder /go-ethereum/go-ethereum-${ETH_VERSION}/build/bin /usr/lo
 ENV USER=foundry
 USER foundry
 ENV FOUNDRY_INSTALL_DIR=/home/${USER}/.foundry
-COPY --from=foundry-builder ${FOUNDRY_INSTALL_DIR} ${FOUNDRY_INSTALL_DIR}
+COPY --from=foundry-builder --chown=${USER}:${USER} ${FOUNDRY_INSTALL_DIR} ${FOUNDRY_INSTALL_DIR}
 ENV PATH=${PATH}:${FOUNDRY_INSTALL_DIR}/bin:/go/bin
 RUN foundryup
 
