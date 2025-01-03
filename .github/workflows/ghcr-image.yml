@@ -36,8 +36,12 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          build-args: VERSION=${{ github.ref_name }} IMAGE_VERSION=unstable-slim
-          tags: ghcr.io/${{ env.REPOSITORY_PATH }}:v${{ github.ref_name }}-unstable-slim ghcr.io/${{ env.REPOSITORY_PATH }}:unstable-slim
+          build-args: |
+            VERSION=${{ github.ref_name }}
+            IMAGE_VERSION=unstable-slim
+          tags: |
+            ghcr.io/${{ env.REPOSITORY_PATH }}:v${{ github.ref_name }}-unstable-slim
+            ghcr.io/${{ env.REPOSITORY_PATH }}:unstable-slim
       - name: Build and Push Stable
         uses: docker/build-push-action@v3
         with:
