@@ -91,7 +91,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v22.12.0
+ENV NODE_VERSION=v20.17.0
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 RUN bash -c ". $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION && nvm use default"

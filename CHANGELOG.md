@@ -1,3 +1,7 @@
+# 1.0.10 (2025-01-02)
+
+* update solc 0.8.22, node 20.17.0
+
 # 1.0.9 (2024-12-12)
 
 * add support for debian:unstable-slim

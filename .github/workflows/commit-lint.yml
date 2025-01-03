@@ -13,7 +13,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: 22.x
+          node-version: 20.17.0
       - name: Install dependencies
         run: npm install -g @commitlint/{cli,config-conventional}
       - name: Validate all commits from PR
