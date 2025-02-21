@@ -1,3 +1,7 @@
+# 1.0.11 (2025-02-21)
+
+* bump up version of go eth 1.15.2
+
 # 1.0.10 (2025-01-02)
 
 * update solc 0.8.22, node 20.17.0
