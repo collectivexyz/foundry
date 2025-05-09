@@ -5,7 +5,7 @@ ARG TARGETARCH
 FROM golang:1 AS go-builder
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
-ARG ETH_VERSION=1.15.2
+ARG ETH_VERSION=1.15.11
 
 # Install yamlfmt
 WORKDIR /yamlfmt
@@ -105,7 +105,7 @@ RUN npm install yarn -g
 
 FROM node-slim
 
-ARG ETH_VERSION=1.15.2
+ARG ETH_VERSION=1.15.11
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt-get update && \
