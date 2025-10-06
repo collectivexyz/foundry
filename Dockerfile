@@ -156,13 +156,10 @@ RUN strip ${FOUNDRY_INSTALL_DIR}/bin/cast
 RUN strip ${FOUNDRY_INSTALL_DIR}/bin/anvil
 RUN strip ${FOUNDRY_INSTALL_DIR}/bin/chisel
 
-LABEL org.label-schema.build-date=$BUILD_DATE \
-    org.label-schema.name="foundry" \
+LABEL org.label-schema.name="foundry" \
     org.label-schema.description="Foundry RS Development Container" \
     org.label-schema.url="https://github.com/collectivexyz/foundry" \
-    org.label-schema.vcs-ref=$VCS_REF \
     org.label-schema.vcs-url="git@github.com:collectivexyz/foundry.git" \
     org.label-schema.vendor="Collective" \
-    org.label-schema.version=$VERSION \
     org.label-schema.schema-version="1.0" \
     org.opencontainers.image.description="Foundry and Ethereum Development Container for Visual Studio Code"
