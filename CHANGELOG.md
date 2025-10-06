@@ -1,3 +1,7 @@
+# 1.0.13 (2025-10-06)
+
+* latest foundry, go-ethereum 1.16.4
+
 # 1.0.12 (2025-05-09)
 
 * go-ethereum 1.15.11
