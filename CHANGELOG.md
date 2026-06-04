@@ -1,3 +1,9 @@
+# 1.0.14 (2026-06-04)
+
+* latest foundry, go-ethereum 1.17.3, node 22.22.3 LTS
+* pin Go builder to 1.26
+* modernize CI actions, replace deprecated actions/create-release
+
 # 1.0.13 (2025-10-06)
 
 * latest foundry, go-ethereum 1.16.4
