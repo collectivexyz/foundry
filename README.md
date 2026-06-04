@@ -20,9 +20,10 @@ To use this development container in Visual Studio Code, specify the `Dockerfile
 
 Everything needed to develop smart contracts with Ethereum and [Foundry](https://github.com/foundry-rs/foundry)
 
-GO: 1.x
-ETH: 1.16.4
+GO: 1.26
+ETH: 1.17.3
 SOLC: 0.8.30
+NODE: 22.22.3
 
 #### Deployments 
 
@@ -39,9 +40,9 @@ SOLC: 0.8.30
 
 ## arm64
 
-  It's possible to use this container on Apple silicon but an image is not provided in the ghcr registry at this time.
+  Multi-arch images (`linux/amd64` and `linux/arm64`) are published to the ghcr registry, so the container runs natively on Apple silicon.
 
-  To build locally, run:
+  To build locally instead, run:
   ` $ sh build.sh `
 
   Then it can be used normally, as below.
@@ -51,10 +52,9 @@ SOLC: 0.8.30
 ```
 FROM ghcr.io/collectivexyz/foundry:latest
 
-ENV PATH=${PATH}:~/.cargo/bin
-RUN ~mr/.cargo/bin/forge build --sizes
+RUN forge build --sizes
 
-CMD ~mr/.cargo/bin/forge test -vvv
+CMD ["forge", "test", "-vvv"]
 ```
 
 ### Architecture

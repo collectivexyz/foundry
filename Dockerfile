@@ -2,10 +2,10 @@ ARG IMAGE_VERSION=stable-slim
 ARG TARGETARCH
 
 # Stage 1: Build yamlfmt
-FROM golang:1 AS go-builder
+FROM golang:1.26 AS go-builder
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
-ARG ETH_VERSION=1.16.4
+ARG ETH_VERSION=1.17.3
 
 # Install yamlfmt
 WORKDIR /yamlfmt
@@ -91,7 +91,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir -p /usr/local/nvm
 ENV NVM_DIR=/usr/local/nvm
 
-ENV NODE_VERSION=v20.17.0
+ENV NODE_VERSION=v22.22.3
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 RUN bash -c ". $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION && nvm use default"
@@ -105,7 +105,7 @@ RUN npm install yarn -g
 
 FROM node-slim
 
-ARG ETH_VERSION=1.16.4
+ARG ETH_VERSION=1.17.3
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt-get update && \
@@ -130,11 +130,14 @@ RUN usermod -a -G sudo foundry
 RUN echo '%foundry ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # SOLC
+# Standalone solc is retained for NatSpec doc generation in downstream repos
+# (e.g. collective-governance-v1 bin/gendoc.sh: solc --devdoc --userdoc).
+# forge itself manages its own solc via svm for build/test.
 COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/solc /usr/local/bin
 COPY --from=ghcr.io/jac18281828/solc:latest /usr/local/bin/yul-phaser /usr/local/bin
 RUN solc --version
 
-## Rust 
+## Rust
 COPY --chown=foundry:foundry --from=foundry-builder /home/foundry/.cargo /home/foundry/.cargo
 
 # GO LANG
