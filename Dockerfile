@@ -2,7 +2,7 @@ ARG IMAGE_VERSION=stable-slim
 ARG TARGETARCH
 
 # Stage 1: Build yamlfmt
-FROM golang:1.26 AS go-builder
+FROM golang:1.27 AS go-builder
 # defined from build kit
 # DOCKER_BUILDKIT=1 docker build . -t ...
 ARG ETH_VERSION=1.17.3
